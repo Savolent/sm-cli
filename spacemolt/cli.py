@@ -97,6 +97,19 @@ Tips:
     # mine
     sub.add_parser("mine", help="Mine once")
 
+    # sell (NPC/player market: fills against best buy orders)
+    p_sell = sub.add_parser("sell", help="Sell item to market (fills against best buy orders)")
+    p_sell.add_argument("item_id", help="Item ID to sell (e.g. ore_carbon)")
+    p_sell.add_argument("quantity", type=int, help="Quantity to sell")
+    p_sell.add_argument("--auto-list", action="store_true", help="Auto-list unsold items as a sell order")
+
+    # buy (NPC/player market: fills against best sell orders)
+    p_buy = sub.add_parser("buy", help="Buy item from market (fills against best sell orders)")
+    p_buy.add_argument("item_id", help="Item ID to buy (e.g. ore_iron)")
+    p_buy.add_argument("quantity", type=int, help="Quantity to buy")
+    p_buy.add_argument("--auto-list", action="store_true", help="Auto-place a buy order for unfilled quantity")
+    p_buy.add_argument("--deliver-to", choices=["cargo", "storage"], default=None, help="Delivery destination (default: cargo)")
+
     # refuel
     p_refuel = sub.add_parser("refuel", help="Refuel ship (docked=station credits; item_id=burn fuel cell from cargo anywhere)")
     p_refuel.add_argument("item_id", nargs="?", default=None, help="Fuel cell item ID (e.g. fuel_cell) — works in space!")
@@ -424,6 +437,8 @@ COMMAND_MAP = {
     "dock": commands.cmd_dock,
     "undock": commands.cmd_undock,
     "mine": commands.cmd_mine,
+    "sell": commands.cmd_sell,
+    "buy": commands.cmd_buy,
     "refuel": commands.cmd_refuel,
     "repair": commands.cmd_repair,
     "wrecks": commands.cmd_wrecks,

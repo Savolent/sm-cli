@@ -365,3 +365,48 @@ def cmd_log_add(api, args):
         print(f"ERROR: {resp['error']}")
     else:
         print("Log entry added.")
+
+
+def cmd_sell(api, args):
+    payload = {"item_id": args.item_id, "quantity": args.quantity}
+    if getattr(args, "auto_list", False):
+        payload["auto_list"] = True
+    resp = api._post("sell", payload)
+    if resp.get("error"):
+        print(f"ERROR: {resp['error']}")
+        return
+    r = resp.get("result", {})
+    sold = r.get("quantity_sold", 0)
+    earned = r.get("total_earned", 0)
+    unsold = r.get("unsold", 0)
+    if sold > 0:
+        print(f"Sold: {r.get('item', args.item_id)} x{sold} for {earned} cr")
+    if unsold > 0:
+        print(f"Unsold: {unsold} units remain in cargo (no buyers at this station)")
+    msg = r.get("message")
+    if msg and sold == 0:
+        print(msg)
+
+
+def cmd_buy(api, args):
+    payload = {"item_id": args.item_id, "quantity": args.quantity}
+    if getattr(args, "auto_list", False):
+        payload["auto_list"] = True
+    deliver_to = getattr(args, "deliver_to", None)
+    if deliver_to:
+        payload["deliver_to"] = deliver_to
+    resp = api._post("buy", payload)
+    if resp.get("error"):
+        print(f"ERROR: {resp['error']}")
+        return
+    r = resp.get("result", {})
+    bought = r.get("quantity_bought", 0)
+    spent = r.get("total_spent", 0)
+    unfilled = r.get("unfilled", 0)
+    if bought > 0:
+        print(f"Bought: {r.get('item', args.item_id)} x{bought} for {spent} cr")
+    if unfilled > 0:
+        print(f"Unfilled: {unfilled} units (no sellers at this station)")
+    msg = r.get("message")
+    if msg and bought == 0:
+        print(msg)
