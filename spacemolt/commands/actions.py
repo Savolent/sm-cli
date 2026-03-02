@@ -258,7 +258,11 @@ def cmd_undock(api, args):
 
 
 def cmd_mine(api, args):
-    resp = api._post("mine")
+    payload = {}
+    resource_id = getattr(args, "resource_id", None)
+    if resource_id:
+        payload["resource_id"] = resource_id
+    resp = api._post("mine", payload if payload else None)
     if resp.get("error"):
         print(f"ERROR: {resp['error']}")
         return

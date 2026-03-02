@@ -95,7 +95,8 @@ Tips:
     sub.add_parser("undock", help="Undock from current station")
 
     # mine
-    sub.add_parser("mine", help="Mine once")
+    p_mine = sub.add_parser("mine", help="Mine once")
+    p_mine.add_argument("resource_id", nargs="?", help="Optional: target a specific resource (e.g. ore_voidborn_null)")
 
     # sell (NPC/player market: fills against best buy orders)
     p_sell = sub.add_parser("sell", help="Sell item to market (fills against best buy orders)")
