@@ -293,8 +293,9 @@ FORMAT_SCHEMAS = {
     },
     "accept_mission": {
         "icon": "✓",
-        "message": "Mission accepted: {title|mission_name}",
+        "message": "{message}",
         "fields": [
+            ("Accepted", "{title|mission_name}"),
             ("Mission ID", "{mission_id|id:id}"),
         ],
         "hints": ["sm missions", "sm active-missions"],
@@ -506,9 +507,10 @@ FORMAT_SCHEMAS = {
     },
     "complete_mission": {
         "icon": "✓",
-        "message": "Mission completed: {title|mission_name}",
+        "message": "{message}",
         "fields": [
-            ("Reward", "{reward_credits|credits:,} cr"),
+            ("Completed", "{title|mission_name}"),
+            ("Reward", "{rewards.credits|reward_credits|credits:,} cr"),
         ],
         "list": {
             "key": "reward_items",
