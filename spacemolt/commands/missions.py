@@ -336,6 +336,125 @@ def cmd_query_missions(api, args):
     print_page_footer(total, total_pages, page, limit)
 
 
+def cmd_completed_missions(api, args):
+    """List all missions you've completed, with title, type, difficulty, and completion time."""
+    as_json = getattr(args, "json", False)
+    resp = api._post("completed_missions")
+    if as_json:
+        print(json.dumps(resp, indent=2))
+        return
+    r = resp.get("result", {})
+    missions = r.get("missions") or []
+    if not missions:
+        print("No completed missions found.")
+        return
+    print(f"Completed missions ({len(missions)}):\n")
+    for m in missions:
+        title = m.get("title", "?")
+        mtype = m.get("type", "")
+        diff = m.get("difficulty", "")
+        when = m.get("completion_time", "")[:10] if m.get("completion_time") else ""
+        giver = m.get("giver", {})
+        giver_name = giver.get("name", "") if isinstance(giver, dict) else ""
+        template_id = m.get("template_id", "")
+
+        meta = []
+        if mtype:
+            meta.append(mtype)
+        if diff:
+            meta.append(f"diff:{diff}")
+        if when:
+            meta.append(when)
+        meta_str = f"  [{', '.join(meta)}]" if meta else ""
+
+        print(f"  {title}{meta_str}")
+        if giver_name:
+            print(f"    from: {giver_name}")
+        if template_id:
+            print(f"    id: {template_id}")
+    print(f"\nUse 'sm view-completed-mission <template_id>' to read full dialog for any mission.")
+
+
+def cmd_view_completed_mission(api, args):
+    """View full details and NPC dialog for a completed mission."""
+    as_json = getattr(args, "json", False)
+    template_id = getattr(args, "template_id", None)
+    if not template_id:
+        print("Usage: sm view-completed-mission <template_id>")
+        print("Use 'sm completed-missions' to list your completed missions and their IDs.")
+        return
+
+    resp = api._post("view_completed_mission", {"template_id": template_id})
+    if as_json:
+        print(json.dumps(resp, indent=2))
+        return
+
+    err = resp.get("error")
+    if err:
+        err_msg = err.get("message", err) if isinstance(err, dict) else err
+        print(f"ERROR: {err_msg}")
+        return
+
+    r = resp.get("result", {})
+    title = r.get("title", "?")
+    mtype = r.get("type", "")
+    diff = r.get("difficulty", "")
+    when = r.get("completion_time", "")[:10] if r.get("completion_time") else ""
+    giver = r.get("giver", {})
+    giver_name = giver.get("name", "") if isinstance(giver, dict) else ""
+    giver_title = giver.get("title", "") if isinstance(giver, dict) else ""
+    description = r.get("description", "")
+    dialog = r.get("dialog") or {}
+    rewards = r.get("rewards") or {}
+
+    print(f"\n{title}")
+    meta = []
+    if mtype:
+        meta.append(mtype)
+    if diff:
+        meta.append(f"difficulty: {diff}")
+    if when:
+        meta.append(f"completed: {when}")
+    if meta:
+        print(f"  [{', '.join(meta)}]")
+    if giver_name:
+        giver_str = giver_name
+        if giver_title:
+            giver_str += f", {giver_title}"
+        print(f"  Given by: {giver_str}")
+    if description:
+        print(f"\n  {description}")
+
+    if dialog:
+        print("\n── Dialog ─────────────────────────────────")
+        for key in ("offer", "accept", "decline", "complete"):
+            text = dialog.get(key)
+            if text:
+                print(f"\n[{key.upper()}]")
+                # Word-wrap at ~80 chars
+                words = text.split()
+                line = "  "
+                for word in words:
+                    if len(line) + len(word) + 1 > 82:
+                        print(line)
+                        line = "  " + word
+                    else:
+                        line += (" " if line != "  " else "") + word
+                if line.strip():
+                    print(line)
+
+    if rewards:
+        print("\n── Rewards ────────────────────────────────")
+        cr = rewards.get("credits")
+        if cr:
+            print(f"  {cr} cr")
+        xp = rewards.get("skill_xp") or {}
+        if isinstance(xp, dict):
+            for skill, amount in xp.items():
+                print(f"  {skill}: +{amount} XP")
+    print()
+
+
 # ---------------------------------------------------------------------------
 # Hierarchical command router
 # ---------------------------------------------------------------------------

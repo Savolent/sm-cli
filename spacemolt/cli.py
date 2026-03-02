@@ -226,6 +226,11 @@ Tips:
     p_mab = missions_sub.add_parser("abandon", help="Abandon mission")
     p_mab.add_argument("mission_id", help="Mission ID")
 
+    # completed missions (v0.158.0)
+    sub.add_parser("completed-missions", help="List all completed missions with IDs")
+    p_vcm = sub.add_parser("view-completed-mission", help="View full NPC dialog for a completed mission")
+    p_vcm.add_argument("template_id", help="Mission template ID (from completed-missions list)")
+
     # deprecated recipe commands (redirect to catalog)
     sub.add_parser("recipes", help="(deprecated) Use: sm catalog recipes")
 
@@ -464,6 +469,8 @@ COMMAND_MAP = {
     "query-recipes": lambda api, args: _deprecated_recipes(),
     "missions": commands.cmd_missions_router,     # NEW: hierarchical router
     "active-missions": commands.cmd_active_missions,  # Keep for backwards compatibility
+    "completed-missions": commands.cmd_completed_missions,
+    "view-completed-mission": commands.cmd_view_completed_mission,
     "query-missions": commands.cmd_query_missions,     # Keep for backwards compatibility
     "skills": commands.cmd_skills,
     "skill": lambda api, args: _deprecated_skills(),
