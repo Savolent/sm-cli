@@ -510,7 +510,7 @@ FORMAT_SCHEMAS = {
         "message": "{message}",
         "fields": [
             ("Completed", "{title|mission_name}"),
-            ("Reward", "{rewards.credits|reward_credits|credits:,} cr"),
+            ("Reward", "{rewards.credits|credits_earned:,} cr"),
         ],
         "list": {
             "key": "reward_items",
