@@ -1325,7 +1325,7 @@ def _all_categories():
             ("battle <action> [stance] [target_id] [side_id]", "Battle action (engage/advance/retreat/stance/target)"),
             ("battle-status", "View current battle state"),
             ("scan <target_id>", "Scan a player's ship"),
-            ("reload <ammo_item_id> <weapon_instance_id>", "Reload weapon ammo"),
+            ("reload <weapon_instance_id> <ammo_item_id>", "Reload weapon ammo"),
             ("cloak <true|false>", "Enable or disable cloaking device"),
             ("self-destruct", "Self-destruct your ship"),
         ]),
