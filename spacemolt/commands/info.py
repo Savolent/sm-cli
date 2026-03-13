@@ -592,7 +592,7 @@ def cmd_ship(api, args):
             special_mod = m.get("special")
             if special_mod:
                 stats.append(f"special:{special_mod}")
-            id_str = f"id:{mid[:12]}" if mid else ""
+            id_str = f"id:{mid}" if mid else ""
             if type_id:
                 id_str = f"type:{type_id}  {id_str}"
             if stats or id_str:
