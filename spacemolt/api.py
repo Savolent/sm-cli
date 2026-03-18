@@ -87,12 +87,13 @@ class SpaceMoltAPI:
         self._command = command
         self._command_args = command_args
 
-    def _post(self, endpoint, body=None, use_session=True, _retried=False, _retry_count=0):
+    def _post(self, endpoint, body=None, use_session=True, session_in_body=False, _retried=False, _retry_count=0):
         if body is None:
             body = {}
         if use_session:
             sid = self.get_session_id()
-            body["session_id"] = sid
+            if session_in_body:
+                body["session_id"] = sid
 
         data = json.dumps(body).encode()
         headers = {
@@ -129,7 +130,7 @@ class SpaceMoltAPI:
                 if os.path.exists(self.cred_file):
                     print("Session expired, re-logging in...", flush=True)
                     self.login(self.cred_file)
-                    return self._post(endpoint, body, use_session, _retried=True)
+                    return self._post(endpoint, body, use_session, session_in_body, _retried=True)
                 raise APIError("Session expired. Run: sm login")
 
             # Handle rate limiting with API-provided wait time
@@ -137,7 +138,7 @@ class SpaceMoltAPI:
                 if wait_seconds and wait_seconds <= 10 and _retry_count < 1:
                     print(f"Rate limited. Waiting {wait_seconds}s...", flush=True)
                     time.sleep(wait_seconds)
-                    return self._post(endpoint, body, use_session, _retried, _retry_count + 1)
+                    return self._post(endpoint, body, use_session, session_in_body, _retried, _retry_count + 1)
                 elif wait_seconds:
                     raise APIError(f"Rate limited. Try again in {wait_seconds}s", status_code=429)
                 else:
@@ -148,7 +149,7 @@ class SpaceMoltAPI:
                 delay = 2
                 print(f"Server error {e.code}, retrying in {delay}s...", flush=True)
                 time.sleep(delay)
-                return self._post(endpoint, body, use_session, _retried, _retry_count + 1)
+                return self._post(endpoint, body, use_session, session_in_body, _retried, _retry_count + 1)
 
             raise APIError(f"HTTP {e.code}: {msg}", status_code=e.code)
         except urllib.error.URLError as e:
@@ -167,7 +168,7 @@ class SpaceMoltAPI:
                 delay = 2 ** _retry_count  # Exponential backoff: 1s, 2s
                 print(f"Network error, retrying in {delay}s...", flush=True)
                 time.sleep(delay)
-                return self._post(endpoint, body, use_session, _retried, _retry_count + 1)
+                return self._post(endpoint, body, use_session, session_in_body, _retried, _retry_count + 1)
             raise APIError(f"Network error: {e.reason}")
         except TimeoutError as e:
             # SSL/socket-level timeout not wrapped by urllib (TimeoutError is
@@ -182,7 +183,7 @@ class SpaceMoltAPI:
                 delay = 2 ** _retry_count
                 print(f"Timeout, retrying in {delay}s...", flush=True)
                 time.sleep(delay)
-                return self._post(endpoint, body, use_session, _retried, _retry_count + 1)
+                return self._post(endpoint, body, use_session, session_in_body, _retried, _retry_count + 1)
             raise APIError(f"Request timed out after retries")
 
     @staticmethod
