@@ -738,6 +738,10 @@ def _fmt_survey_system(resp):
     if message:
         print(f"  {message}")
 
+    anomaly_hint = r.get("anomaly_hint")
+    if anomaly_hint:
+        print(f"\n  ⚡ Anomaly Hint: {anomaly_hint}")
+
     def _fmt_deposit(dep, label):
         dep_name = dep.get("name", "?")
         dep_type = dep.get("type", "")
