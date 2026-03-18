@@ -763,7 +763,16 @@ def cmd_base(api, args):
     if owner_id:
         print(f"  Owner: {owner_id}")
 
-    services = b.get("services", {})
+    condition = r.get("condition", {})
+    if condition:
+        pct = condition.get("satisfaction_pct")
+        satisfied = condition.get("satisfied_count")
+        total = condition.get("total_service_infra")
+        cond_text = condition.get("condition_text", "")
+        if pct is not None:
+            print(f"  Satisfaction: {pct}% ({satisfied}/{total}) — {cond_text}")
+
+    services = r.get("services", b.get("services", {}))
     if isinstance(services, dict):
         active = sorted(k for k, v in services.items() if v)
     else:
