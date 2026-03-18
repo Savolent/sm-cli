@@ -1689,13 +1689,13 @@ def cmd_trade_offer(api, extra_args, as_json=False):
             trade_id = r.get("trade_id", "?")
             msg = r.get("message", "Trade offer sent.")
             print(f"✓ {msg}")
-            print(f"  Trade ID: {trade_id[:8]}")
+            print(f"  Trade ID: {trade_id}")
             if offer_items:
                 parts = [f"{i['item_id']} x{i['quantity']}" for i in offer_items]
                 print(f"  Offering: {', '.join(parts)}")
             if offer_credits:
                 print(f"  Credits offered: {offer_credits:,} cr")
-            print(f"\n  Hint: sm trades  |  sm trade-cancel {trade_id[:8]}")
+            print(f"\n  Hint: sm trades  |  sm trade-cancel {trade_id}")
 
 
 def cmd_raw(api, args):
