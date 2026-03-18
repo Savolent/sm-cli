@@ -115,6 +115,13 @@ def render_schema(schema, resp):
         print(r)
         return
 
+    # Some endpoints return errors inside result (e.g. forum cooldown: success=False + message).
+    # Catch these before printing a false success icon.
+    if r.get("success") is False:
+        err_msg = r.get("message") or r.get("error") or "Action failed."
+        print(f"ERROR: {err_msg}")
+        return
+
     # Icon + message
     msg_tpl = schema.get("message")
     if msg_tpl:
