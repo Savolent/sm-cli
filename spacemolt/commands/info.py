@@ -629,9 +629,7 @@ def cmd_ship(api, args):
 
 
 def cmd_pois(api, args):
-    system_id = getattr(args, "system", None)
-    body = {"system_id": system_id} if system_id else {}
-    resp = api._post("get_system", body)
+    resp = api._post("get_system", {})
     result = resp.get("result", {})
     system = result.get("system", {})
     pois = system.get("pois", [])

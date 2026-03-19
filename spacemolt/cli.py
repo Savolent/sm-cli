@@ -48,8 +48,7 @@ Tips:
     sub.add_parser("ship", help="Detailed ship info + modules")
 
     # pois
-    p_pois = sub.add_parser("pois", help="POIs in current system")
-    p_pois.add_argument("--system", default=None, help="System ID to view POIs in a different system")
+    sub.add_parser("pois", help="POIs in current system")
 
     # system
     sub.add_parser("system", help="System overview + connections")
