@@ -1,4 +1,5 @@
 import json
+import sys
 
 
 __all__ = [
@@ -1129,7 +1130,7 @@ def cmd_passthrough(api, endpoint, extra_args, as_json=False):
     except APIError as e:
         print(f"ERROR: {e}")
         _print_error_hints(endpoint, str(e), api)
-        return
+        sys.exit(1)
     finally:
         if _saved_timeout is not None:
             api.timeout = _saved_timeout
